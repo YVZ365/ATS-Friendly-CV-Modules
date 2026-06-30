@@ -1,7 +1,7 @@
 """
 ats_engine.contact_info_extractor — CV iletişim bilgisi çıkarımı.
 
-Email, telefon, LinkedIn URL'si ve şehir bilgilerini regex/heüristik ile bulur.
+Email, telefon, LinkedIn URL'si ve şehir bilgilerini regex/heuristik ile bulur.
 
 Bağımlılık: yalnızca standart kütüphane.
 """
