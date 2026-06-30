@@ -1,0 +1,48 @@
+{
+  "domain": "Software Engineering",
+  "language": "en",
+  "categories": {
+    "frontend": [
+      "TypeScript",
+      "JavaScript",
+      "React",
+      "Next.js",
+      "HTML",
+      "CSS",
+      "responsive design",
+      "accessibility"
+    ],
+    "backend": [
+      "Node.js",
+      "Python",
+      "REST API",
+      "GraphQL",
+      "microservices",
+      "authentication",
+      "authorization",
+      "PostgreSQL",
+      "Redis",
+      "Prisma"
+    ],
+    "platform_devops": [
+      "Docker",
+      "Kubernetes",
+      "CI/CD",
+      "GitHub Actions",
+      "Terraform",
+      "monitoring",
+      "observability",
+      "cloud infrastructure"
+    ],
+    "quality_delivery": [
+      "Jest",
+      "pytest",
+      "TDD",
+      "code review",
+      "Agile",
+      "Scrum",
+      "incident response",
+      "performance optimization"
+    ]
+  }
+}

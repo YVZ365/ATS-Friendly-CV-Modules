@@ -1,0 +1,39 @@
+{
+  "domain": "Ürün Yönetimi",
+  "language": "tr",
+  "categories": {
+    "strateji": [
+      "ürün yol haritası",
+      "ürün stratejisi",
+      "OKR",
+      "KPI",
+      "pazara çıkış stratejisi",
+      "pazar araştırması",
+      "rekabet analizi"
+    ],
+    "teslimat": [
+      "kullanıcı hikayesi",
+      "backlog",
+      "sprint planlama",
+      "Scrum",
+      "Agile",
+      "sürüm planlama",
+      "paydaş yönetimi"
+    ],
+    "buyume": [
+      "A/B testi",
+      "NPS",
+      "elde tutma",
+      "aktivasyon",
+      "dönüşüm oranı",
+      "büyüme deneyi"
+    ],
+    "analitik": [
+      "SQL",
+      "dashboard",
+      "funnel analizi",
+      "kohort analizi",
+      "North Star metriği"
+    ]
+  }
+}

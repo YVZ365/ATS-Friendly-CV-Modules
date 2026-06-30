@@ -17,6 +17,7 @@
 | [12-dil-tutarliligi.md](12-dil-tutarliligi.md) | Dil tutarlılığı + Türkçe morfoloji |
 | [13-grammarly-kapisi.md](13-grammarly-kapisi.md) | Grammarly kapısı (AI-detector/rewriter) |
 | [14-pipeline-stages.md](14-pipeline-stages.md) | Pipeline aşamaları ve akış şeması |
+| [15-coklu-ilan-stratejisi.md](15-coklu-ilan-stratejisi.md) | Aynı CV'yi çoklu ilana uyarlama stratejisi |
 
 ### v1.5.0 — Yeni Dokümanlar
 
@@ -45,3 +46,4 @@
 | [research/R1](research/R1-sistemik-veri-ats-mimarisi.md) | Sistemik veri → ATS mimarisi |
 | [research/R2](research/R2-sentez-once-analiz.md) | Sentez-önce analiz |
 | [research/R3](research/R3-seo-ats-sozluk.md) | SEO-ATS sözlük |
+| [research/R4](research/R4-ats-parser-alan-haritasi.md) | ATS parser alan haritası |

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Job Analysis Output",
+  "type": "object",
+  "required": ["job_title", "summary", "must_have", "nice_to_have", "topics"],
+  "properties": {
+    "job_title": {"type": "string"},
+    "summary": {"type": "string"},
+    "must_have": {"type": "array", "items": {"type": "string"}},
+    "nice_to_have": {"type": "array", "items": {"type": "string"}},
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["topic", "score"],
+        "properties": {
+          "topic": {"type": "string"},
+          "score": {"type": "number"},
+          "keywords": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

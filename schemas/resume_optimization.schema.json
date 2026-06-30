@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Resume Optimization Output",
+  "type": "object",
+  "required": ["target_role", "priority_gaps", "recommended_changes"],
+  "properties": {
+    "target_role": {"type": "string"},
+    "priority_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["keyword", "gap_score"],
+        "properties": {
+          "keyword": {"type": "string"},
+          "gap_score": {"type": "number"},
+          "importance": {"type": "number"}
+        }
+      }
+    },
+    "recommended_changes": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "ats_score_target": {"type": "number", "minimum": 0, "maximum": 100}
+  }
+}

@@ -468,3 +468,227 @@ def test_report_has_qa_checks():
     expected_checks = ["completeness", "hygiene", "quantification", "cliches"]
     for check in expected_checks:
         assert check in qa, f"qa_checks içinde '{check}' olmalı"
+
+
+# ─── v1.6.0 Feature Tests ─────────────────────────────────────────────────────
+
+def test_experience_year_extractor_basic_range():
+    from datetime import date
+    from ats_engine.experience_year_extractor import calculate_experience_years
+
+    result = calculate_experience_years("Software Engineer | Jan 2020 - Dec 2021", today=date(2026, 6, 1))
+    assert result["total_months"] == 24
+    assert result["total_years"] == pytest.approx(2.0)
+
+
+def test_experience_year_extractor_merges_overlaps():
+    from datetime import date
+    from ats_engine.experience_year_extractor import calculate_experience_years
+
+    text = "2019 - 2021\n2020 - 2023"
+    result = calculate_experience_years(text, today=date(2026, 6, 1))
+    assert result["range_count"] == 1
+    assert result["total_years"] == pytest.approx(5.0)
+
+
+def test_experience_year_extractor_handles_present():
+    from datetime import date
+    from ats_engine.experience_year_extractor import calculate_experience_years
+
+    result = calculate_experience_years("Senior Engineer | Mar 2024 - Present", today=date(2026, 6, 1))
+    assert result["total_months"] == 28
+    assert result["ranges"][0]["end"] == "2026-06"
+
+
+def test_experience_year_extractor_empty_text():
+    from ats_engine.experience_year_extractor import calculate_experience_years
+
+    result = calculate_experience_years("No date here")
+    assert result["total_months"] == 0
+    assert result["ranges"] == []
+
+
+def test_pipeline_stage_detector_by_years():
+    from ats_engine.pipeline_stage_detector import detect_pipeline_stage
+
+    result = detect_pipeline_stage("Software Engineer\n2020 - 2023")
+    assert result["stage"] == "mid"
+    assert result["signals"]["experience_stage"] == "mid"
+
+
+def test_pipeline_stage_detector_explicit_lead_title():
+    from ats_engine.pipeline_stage_detector import detect_pipeline_stage
+
+    result = detect_pipeline_stage("Engineering Lead\n2018 - 2020")
+    assert result["stage"] == "lead"
+    assert "lead" in " ".join(result["signals"]["title_keywords"])
+
+
+def test_pipeline_stage_detector_experience_mapping():
+    from ats_engine.pipeline_stage_detector import map_experience_to_stage
+
+    assert map_experience_to_stage(1.5) == "junior"
+    assert map_experience_to_stage(6.0) == "senior"
+
+
+def test_pipeline_stage_detector_title_boosts_confidence():
+    from ats_engine.pipeline_stage_detector import detect_pipeline_stage
+
+    result = detect_pipeline_stage("Senior Product Manager\n2016 - 2024")
+    assert result["confidence"] >= 0.8
+
+
+def test_contact_info_extractor_email_phone_linkedin():
+    from ats_engine.contact_info_extractor import extract_contact_info
+
+    text = "Ada Lovelace\nada@example.com\n+90 555 123 45 67\nlinkedin.com/in/ada-lovelace"
+    result = extract_contact_info(text)
+    assert result["email"] == "ada@example.com"
+    assert result["phone"] == "+905551234567"
+    assert result["linkedin"] == "https://linkedin.com/in/ada-lovelace"
+
+
+def test_contact_info_extractor_detects_city_label():
+    from ats_engine.contact_info_extractor import extract_contact_info
+
+    result = extract_contact_info("Location: Istanbul\nEmail: test@example.com")
+    assert result["city"] == "Istanbul"
+
+
+def test_contact_info_extractor_city_from_header():
+    from ats_engine.contact_info_extractor import extract_contact_info
+
+    result = extract_contact_info("John Doe\nBerlin, Germany\njohn@example.com")
+    assert result["city"] == "Berlin"
+
+
+def test_contact_info_extractor_missing_fields():
+    from ats_engine.contact_info_extractor import extract_contact_info
+
+    result = extract_contact_info("Profile only")
+    assert result["email"] is None
+    assert result["phone"] is None
+
+
+def test_section_strength_scorer_detects_sections():
+    from ats_engine.section_strength_scorer import score_cv_sections
+
+    cv_text = (
+        "Summary\nProduct manager with 8 years of experience leading launches.\n"
+        "Experience\nAcme Corp\n- Increased revenue by 20% in 2024.\n"
+        "Skills\nSQL, Roadmap, OKR, Scrum, Analytics\n"
+        "Education\nBSc Business 2018"
+    )
+    result = score_cv_sections(cv_text)
+    assert "summary" in result["detected_sections"]
+    assert result["sections"]["experience"]["score"] > 50
+
+
+def test_section_strength_scorer_missing_section_scores_zero():
+    from ats_engine.section_strength_scorer import score_cv_sections
+
+    result = score_cv_sections("Summary\nShort profile only")
+    assert result["sections"]["projects"]["score"] == 0
+
+
+def test_section_strength_scorer_quantified_experience_scores_higher():
+    from ats_engine.section_strength_scorer import score_cv_sections
+
+    quantified = score_cv_sections("Experience\n- Improved latency by 35% in 2024.")
+    plain = score_cv_sections("Experience\n- Improved platform quality.")
+    assert quantified["sections"]["experience"]["score"] > plain["sections"]["experience"]["score"]
+
+
+def test_section_strength_scorer_skills_list_signal():
+    from ats_engine.section_strength_scorer import score_cv_sections
+
+    result = score_cv_sections("Skills\nPython, SQL, Docker, Kubernetes, GraphQL, CI/CD")
+    assert "keyword_list" in result["sections"]["skills"]["signals"]
+
+
+def test_topic_modeler_detects_technical_topic():
+    from ats_engine.topic_modeler import cluster_job_topics
+
+    jd_text = "We need TypeScript, React, Next.js and GraphQL experience."
+    result = cluster_job_topics(jd_text)
+    assert result["dominant_topics"][0]["topic"] == "technical"
+
+
+def test_topic_modeler_detects_product_topic():
+    from ats_engine.topic_modeler import cluster_job_topics
+
+    jd_text = "Own the product roadmap, OKRs, KPIs and go-to-market strategy."
+    result = cluster_job_topics(jd_text)
+    assert any(item["topic"] == "product" for item in result["dominant_topics"])
+
+
+def test_topic_modeler_limits_top_n():
+    from ats_engine.topic_modeler import cluster_job_topics
+
+    jd_text = "React Scrum mentor roadmap SQL communication"
+    result = cluster_job_topics(jd_text, top_n=2)
+    assert len(result["dominant_topics"]) <= 2
+
+
+def test_topic_modeler_returns_fallback_method():
+    from ats_engine.topic_modeler import cluster_job_topics
+
+    result = cluster_job_topics("Plain text without strong keywords")
+    assert result["method"] == "heuristic_lda_fallback"
+
+
+def test_fuzzy_keyword_matcher_exact_match():
+    from ats_engine.fuzzy_keyword_matcher import score_keyword_match
+
+    assert score_keyword_match("React", "React") == 1.0
+
+
+def test_fuzzy_keyword_matcher_react_js_variant():
+    from ats_engine.fuzzy_keyword_matcher import score_keyword_match
+
+    assert score_keyword_match("React.js", "React") >= 0.9
+
+
+def test_fuzzy_keyword_matcher_ml_abbreviation():
+    from ats_engine.fuzzy_keyword_matcher import score_keyword_match
+
+    assert score_keyword_match("machine learning", "ML") >= 0.9
+
+
+def test_fuzzy_keyword_matcher_find_matches_threshold():
+    from ats_engine.fuzzy_keyword_matcher import find_fuzzy_matches
+
+    result = find_fuzzy_matches(["CI/CD", "Kubernetes"], "Built CI CD automation pipelines", threshold=0.8)
+    assert any(item["keyword"] == "CI/CD" for item in result)
+
+
+def test_keyword_gap_ranker_prioritizes_required_terms():
+    from ats_engine.keyword_gap_ranker import rank_keyword_gaps
+
+    jd_text = "Required: Kubernetes, Docker. Preferred: Figma."
+    cv_text = "Experience with Docker and Agile delivery."
+    gaps = rank_keyword_gaps(jd_text, cv_text, keywords=["Kubernetes", "Docker", "Figma"])
+    assert gaps[0]["keyword"] == "Kubernetes"
+
+
+def test_keyword_gap_ranker_skips_existing_keywords():
+    from ats_engine.keyword_gap_ranker import rank_keyword_gaps
+
+    gaps = rank_keyword_gaps("Required: React, GraphQL", "Strong React experience", keywords=["React", "GraphQL"])
+    assert all(item["keyword"] != "React" for item in gaps)
+
+
+def test_keyword_gap_ranker_uses_frequency():
+    from ats_engine.keyword_gap_ranker import rank_keyword_gaps
+
+    jd_text = "Required: SQL. SQL experience is required. SQL reporting matters."
+    gaps = rank_keyword_gaps(jd_text, "Python only", keywords=["SQL"])
+    assert gaps[0]["frequency"] >= 3
+
+
+def test_keyword_gap_ranker_returns_sorted_scores():
+    from ats_engine.keyword_gap_ranker import rank_keyword_gaps
+
+    jd_text = "Required: Python, Kubernetes. Preferred: Tableau."
+    gaps = rank_keyword_gaps(jd_text, "Python", keywords=["Python", "Kubernetes", "Tableau"])
+    assert gaps == sorted(gaps, key=lambda item: (-item["gap_score"], -item["frequency"], item["keyword"]))

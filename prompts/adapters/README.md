@@ -10,6 +10,7 @@ Her LLM'in farklı güçlü yanları ve format tercihleri vardır. Bu adaptörle
 | `copilot.md` | Microsoft Copilot | M365 entegrasyonu, Word format |
 | `perplexity.md` | Perplexity | Araştırma, güncel veri |
 | `deepseek.md` | DeepSeek | Teknik analiz, maliyet-etkin |
+| `crewai.md` | CrewAI | Çok ajanlı görev ayrımı |
 
 ## Kullanım
 

@@ -1,0 +1,39 @@
+{
+  "domain": "Product Management",
+  "language": "en",
+  "categories": {
+    "strategy": [
+      "product roadmap",
+      "product strategy",
+      "OKR",
+      "KPI",
+      "go-to-market",
+      "market research",
+      "competitive analysis"
+    ],
+    "delivery": [
+      "user story",
+      "backlog",
+      "sprint planning",
+      "Scrum",
+      "Agile",
+      "release planning",
+      "stakeholder management"
+    ],
+    "growth": [
+      "A/B testing",
+      "NPS",
+      "retention",
+      "activation",
+      "conversion rate",
+      "growth experiment"
+    ],
+    "analytics": [
+      "SQL",
+      "dashboard",
+      "funnel analysis",
+      "cohort analysis",
+      "North Star metric"
+    ]
+  }
+}
