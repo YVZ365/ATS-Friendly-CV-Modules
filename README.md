@@ -6,8 +6,8 @@ A deterministic Python engine that measures job description (JD) to CV alignment
 
 [![CI](https://github.com/Yavuz365/ATS-Friendly-CV-Modules/actions/workflows/test.yml/badge.svg)](https://github.com/Yavuz365/ATS-Friendly-CV-Modules/actions)
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
-![Version](https://img.shields.io/badge/version-1.5.0-green)
-![Tests](https://img.shields.io/badge/tests-43%20passed-brightgreen)
+![Version](https://img.shields.io/badge/version-1.6.0-green)
+![Tests](https://img.shields.io/badge/tests-70%2B-brightgreen)
 ![License](https://img.shields.io/badge/license-Proprietary-red)
 
 ---
@@ -32,7 +32,7 @@ Framework CV  ──────→  Evidence Bank  ──→  Provenance Check 
 ATS-Friendly-CV-Modules/
 ├── engine/                           ← Python engine (core)
 │   ├── ats_engine/
-│   │   ├── __init__.py               ← All API exports (v1.5.0)
+│   │   ├── __init__.py               ← All API exports (v1.6.0)
 │   │   ├── scoring.py                ← Hybrid ATS Match Score (TF-IDF+BM25+SBERT)
 │   │   ├── multilevel.py             ← 3-level scoring + LangGate
 │   │   ├── cv_parser.py              ← CV section detection + parse safety score
@@ -50,12 +50,19 @@ ATS-Friendly-CV-Modules/
 │   │   ├── format_metadata_hygiene.py← Format & metadata hygiene (v1.4)
 │   │   ├── locale_consistency.py     ← Language consistency check (v1.4)
 │   │   ├── quantification_score.py   ← Quantification/metrics scoring (v1.4)
+│   │   ├── experience_year_extractor.py ← Date range → total experience (v1.6)
+│   │   ├── pipeline_stage_detector.py ← Career stage detector (v1.6)
+│   │   ├── contact_info_extractor.py ← Email/phone/LinkedIn/city extraction (v1.6)
+│   │   ├── section_strength_scorer.py← Section ATS strength scoring (v1.6)
+│   │   ├── topic_modeler.py          ← JD topic clustering (v1.6)
+│   │   ├── fuzzy_keyword_matcher.py  ← Fuzzy/partial keyword matching (v1.6)
+│   │   ├── keyword_gap_ranker.py     ← Gap keyword ranking (v1.6)
 │   │   └── cli.py                    ← Command-line interface
 │   ├── data/
 │   │   ├── action_verbs.json         ← 260+ action verbs (TR/EN, 13 categories, cliche_risk)
 │   │   ├── skill_synonyms.json       ← 61 canonicalization entries
 │   │   └── stopwords_tr_en.txt       ← Stopwords (TR + EN)
-│   ├── tests/test_core.py            ← 43 unit tests
+│   ├── tests/test_core.py            ← 71 unit tests
 │   ├── examples/
 │   │   ├── run_demo.py
 │   │   ├── sample_jd_foreign_trade.txt
@@ -69,7 +76,7 @@ ATS-Friendly-CV-Modules/
 │   └── user_profile.yaml            ← User profile config (scoring prefs, targets)
 │
 ├── docs/                             ← Methodology documentation
-│   ├── 00-mimari.md … 14-pipeline-stages.md  (15 main documents)
+│   ├── 00-mimari.md … 15-coklu-ilan-stratejisi.md  (16 main documents)
 │   ├── decision_engine.md            ← 5-gate karar motoru mimarisi (v1.5)
 │   ├── diagnostic_tree.md            ← 7-dallı ATS tanı ağacı (v1.5)
 │   ├── module_status.md              ← 5-seviyeli modül durum matrisi (v1.5)
@@ -84,7 +91,8 @@ ATS-Friendly-CV-Modules/
 │   └── research/                     ← Research notes
 │       ├── R1-sistemik-veri-ats-mimarisi.md
 │       ├── R2-sentez-once-analiz.md
-│       └── R3-seo-ats-sozluk.md
+│       ├── R3-seo-ats-sozluk.md
+│       └── R4-ats-parser-alan-haritasi.md
 │
 ├── prompts/                          ← Master Prompt (TR + EN)
 │   ├── master-prompt-TR.md           ← Portable Turkish prompt
@@ -93,15 +101,23 @@ ATS-Friendly-CV-Modules/
 │   └── adapters/                     ← AI tool adapters
 │       ├── chatgpt.md, claude.md, gemini.md
 │       ├── copilot.md, deepseek.md, perplexity.md
+│       └── crewai.md
 │
 ├── references/                       ← ATS knowledge base
 │   └── ats-kb/
 │       ├── ats-parser-rules.md       ← ATS parser rules
 │       ├── jd-taxonomy.md            ← JD taxonomy (7-layer)
-│       └── keyword-ontology.md       ← Keyword classification ontology
+│       ├── keyword-ontology.md       ← Keyword classification ontology
+│       ├── topic-taxonomy.md         ← JD topic classification
+│       ├── experience-level-mapping.md ← Experience → title mapping
+│       └── fuzzy-matching-rules.md   ← Accepted keyword variations
 │
 ├── schemas/                          ← JSON output schemas
-│   └── scoring_result.schema.json
+│   ├── scoring_result.schema.json
+│   ├── pipeline_stage.schema.json
+│   ├── job_analysis.schema.json
+│   ├── resume_optimization.schema.json
+│   └── company_research.schema.json
 │
 ├── skills/                           ← AI skill files
 │   ├── ats-cv-architect/             ← Main CV engine skill
@@ -109,21 +125,33 @@ ATS-Friendly-CV-Modules/
 │   │   ├── assets/
 │   │   ├── references/
 │   │   └── scripts/ats_score.py
-│   └── synthesis-analysis-research/  ← Research/analysis skill
+│   ├── synthesis-analysis-research/  ← Research/analysis skill
 │       ├── SKILL.md
 │       └── references/
+│   └── company-research/
+│       └── SKILL.md
 │
 ├── domain-packs/                     ← Domain-specific term packs
-│   └── foreign-trade-logistics/
+│   ├── foreign-trade-logistics/
 │       ├── keywords_en.json          ← 65 keywords (English)
 │       └── keywords_tr.json          ← 73 keywords (Turkish)
+│   ├── software-engineering/
+│   │   └── keywords_en.json          ← Full-stack/software engineering pack
+│   └── product-management/
+│       ├── keywords_en.json          ← Product management pack (EN)
+│       └── keywords_tr.json          ← Product management pack (TR)
 │
 ├── templates/                        ← JD/CV templates
 │   ├── jd-etiketli-sablon.md
-│   └── kanit-bankasi-sablonu.md
+│   ├── kanit-bankasi-sablonu.md
+│   ├── framework-cv-sablon-tr.md
+│   ├── framework-cv-template-en.md
+│   └── video-cv-rehberi.md
 │
 ├── workflows/                        ← Automation pipeline docs
-│   ├── automation/ats-cv-pipeline.md
+│   ├── automation/
+│   │   ├── ats-cv-pipeline.md
+│   │   └── multi-agent-pipeline.md
 │   └── notion/veritabani-semasi.md
 │
 ├── archive/                          ← Legacy skill files (reference)
@@ -273,6 +301,17 @@ This repo is **not dependent on any AI tool**:
 | [13-grammarly-kapisi.md](docs/13-grammarly-kapisi.md) | Grammarly gate |
 | [14-pipeline-stages.md](docs/14-pipeline-stages.md) | Pipeline stages |
 
+### v1.6 New Docs
+
+| File | Content |
+|------|---------|
+| [docs/15-coklu-ilan-stratejisi.md](docs/15-coklu-ilan-stratejisi.md) | Multi-job adaptation and CV versioning |
+| [docs/research/R4-ats-parser-alan-haritasi.md](docs/research/R4-ats-parser-alan-haritasi.md) | ATS parser field mapping |
+| [references/ats-kb/topic-taxonomy.md](references/ats-kb/topic-taxonomy.md) | Topic classification for JD clustering |
+| [references/ats-kb/experience-level-mapping.md](references/ats-kb/experience-level-mapping.md) | Experience-to-seniority lookup |
+| [references/ats-kb/fuzzy-matching-rules.md](references/ats-kb/fuzzy-matching-rules.md) | Fuzzy keyword variation rules |
+| [workflows/automation/multi-agent-pipeline.md](workflows/automation/multi-agent-pipeline.md) | Multi-agent automation flow |
+
 ### v1.5 New Docs
 
 | File | Content |
@@ -299,6 +338,9 @@ This repo is **not dependent on any AI tool**:
 | [ats-parser-rules.md](references/ats-kb/ats-parser-rules.md) | ATS parser rules, format penalties |
 | [jd-taxonomy.md](references/ats-kb/jd-taxonomy.md) | JD 7-layer model details |
 | [keyword-ontology.md](references/ats-kb/keyword-ontology.md) | Keyword classification & synonym expansion |
+| [topic-taxonomy.md](references/ats-kb/topic-taxonomy.md) | Topic buckets for JD analysis |
+| [experience-level-mapping.md](references/ats-kb/experience-level-mapping.md) | Experience year → seniority mapping |
+| [fuzzy-matching-rules.md](references/ats-kb/fuzzy-matching-rules.md) | Accepted keyword abbreviations and variants |
 
 ## 🧪 Tests
 
@@ -307,7 +349,7 @@ This repo is **not dependent on any AI tool**:
 cd engine && pip install -e ".[dev]" && pytest tests/ -v
 ```
 
-43 tests covering: clamp, gate, H1 stopping condition, gap classification, 6-field output, BM25 pipeline, anti-stuffing, parse gate auto-call, empty must_have, SBERT singleton, Jaccard dynamic threshold, domain packs, LangGate trigger, precision independence, completeness guard, format hygiene, locale detection, quantification audit, cliché detection, calibration, acronym-safe tr_lower (P0.1), QA checks wiring (P0.4).
+71 tests covering: clamp, gate, H1 stopping condition, gap classification, 6-field output, BM25 pipeline, anti-stuffing, parse gate auto-call, empty must_have, SBERT singleton, Jaccard dynamic threshold, domain packs, LangGate trigger, precision independence, completeness guard, format hygiene, locale detection, quantification audit, cliché detection, calibration, acronym-safe tr_lower (P0.1), QA checks wiring (P0.4), pipeline stage detection, contact extraction, section scoring, topic modeling, keyword gap ranking, experience extraction, and fuzzy keyword matching.
 
 CI/CD: Tests run automatically on Python 3.10, 3.11, 3.12 on every push.
 
@@ -322,11 +364,12 @@ CI/CD: Tests run automatically on Python 3.10, 3.11, 3.12 on every push.
 
 ## 📦 Version
 
-Current: **v1.5.0** — see [CHANGELOG.md](CHANGELOG.md) for full history.
+Current: **v1.6.0** — see [CHANGELOG.md](CHANGELOG.md) for full history.
 
 ### Version History
 | Version | Date | Highlights |
 |---------|------|------------|
+| v1.6.0 | 2026-06-30 | 7 new engine modules, 2 new domain packs, 4 schemas, 3 templates, CrewAI/company research assets, 71 tests |
 | v1.5.0 | 2026-06-15 | P0 critical fixes (5), 6 QA modules wired, 4 new docs, config layer, 43 tests |
 | v1.4.0 | 2026-06-13 | 6 new modules (calibration, cliché, completeness, format, locale, quantification) |
 | v1.3.0 | 2026-06-12 | BM25 pipeline, Jaccard dynamic, domain_packs, LangGate fix, ruff+mypy |

@@ -3,6 +3,30 @@
 Tüm önemli değişiklikler bu dosyada belgelenir.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
+## [1.6.0] — 2026-06-30
+
+### Added (CD Repo Entegrasyonu)
+- `pipeline_stage_detector.py` — Career stage detection (junior/mid/senior/lead)
+- `contact_info_extractor.py` — CV contact info extraction (email, phone, LinkedIn, city)
+- `section_strength_scorer.py` — Per-section ATS strength scoring
+- `topic_modeler.py` — LDA-inspired JD topic clustering
+- `keyword_gap_ranker.py` — Gap keywords ranked by frequency × importance
+- `experience_year_extractor.py` — Date range parser + total experience calculator
+- `fuzzy_keyword_matcher.py` — Fuzzy/partial keyword matching (string_score in Python)
+- `domain-packs/` — software-engineering (EN), product-management (EN+TR)
+- `schemas/` — pipeline_stage, job_analysis, resume_optimization, company_research
+- `templates/` — framework-cv-sablon-tr, framework-cv-template-en, video-cv-rehberi
+- `prompts/adapters/crewai.md` — CrewAI adapter prompt
+- `skills/company-research/SKILL.md` — company research skill
+- `docs/15-coklu-ilan-stratejisi.md` and `docs/research/R4-ats-parser-alan-haritasi.md`
+- `references/ats-kb/` — topic-taxonomy, experience-level-mapping, fuzzy-matching-rules
+- `workflows/automation/multi-agent-pipeline.md` — multi-agent ATS pipeline
+
+### Tests
+- 28 new test functions added (total: 71)
+
+---
+
 ## [1.5.0] — 2026-06-15
 
 ### Fixed — P0 Critical (Viktor Hybrid Revizyon v2.0, 8+ AI çapraz-doğrulama)
